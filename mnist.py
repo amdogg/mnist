@@ -6,7 +6,6 @@ Gets to 99.25% test accuracy after 12 epochs
 '''
 
 import keras
-from keras.utils import np_utils
 from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
@@ -14,7 +13,15 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
 from tensorflow.python.framework.convert_to_constants import convert_variables_to_constants_v2
 import tensorflow as tf
- 
+import argparse
+
+parser = argparse.ArgumentParser(description='IMDB model training')
+parser.add_argument('--epochs', help='number of epochs to run', default='12')
+parser.add_argument('--batch_size', help='iteration batch size', default='128')
+args = parser.parse_args()
+
+batch_size = int(args.batch_size)
+epochs = int(args.epochs)
 def save_frozen_pb(model, mod_path):
     # Convert Keras model to ConcreteFunction
     full_model = tf.function(lambda x: model(x))
@@ -49,9 +56,9 @@ class LossAndErrorPrintingCallback(keras.callbacks.Callback):
                 epoch, logs["loss"])
         )
 
-batch_size = 128
+
 num_classes = 10
-epochs = 12
+
 
 # input image dimensions
 img_rows, img_cols = 28, 28
@@ -72,8 +79,8 @@ print(x_train.shape[0], 'train samples')
 print(x_test.shape[0], 'test samples')
 
 # convert class vectors to binary class matrices
-y_train = keras.utils.np_utils.to_categorical(y_train, num_classes)
-y_test = keras.utils.np_utils.to_categorical(y_test, num_classes)
+y_train = keras.utils.to_categorical(y_train, num_classes)
+y_test = keras.utils.to_categorical(y_test, num_classes)
 
 model = Sequential()
 model.add(Conv2D(32, kernel_size=(3, 3),
